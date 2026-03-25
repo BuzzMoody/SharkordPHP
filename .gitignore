@@ -17,3 +17,4 @@ composer.phar
 Thumbs.db
 
 .phpdoc/
+/.claude
