@@ -8,6 +8,7 @@
 	use Sharkord\Sharkord;
 	use Sharkord\Permission;
 	use Sharkord\Internal\GuardedAsync;
+	use Sharkord\Internal\PromiseUtils;
 
 	/**
 	 * Class Invite
@@ -141,14 +142,9 @@
 					"path"  => "invites.delete",
 				])->then(function (array $response) use ($inviteId): bool {
 
-					if (isset($response['type']) && $response['type'] === 'data') {
-						$this->sharkord->invites->collection()->remove($inviteId);
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to delete invite. Server responded with: " . json_encode($response)
-					);
+					PromiseUtils::expectDataResponse($response, 'delete invite');
+					$this->sharkord->invites->collection()->remove($inviteId);
+					return true;
 
 				});
 

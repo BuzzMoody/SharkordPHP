@@ -77,7 +77,12 @@
 			}
 
 			foreach ($files as $file) {
-				
+
+				if (!is_file($file) || !is_readable($file)) {
+					$this->sharkord->logger->warning("Skipping unreadable command file: {$file}");
+					continue;
+				}
+
 				require_once $file;
 				$className = basename($file, '.php');
 				$fullClassName = $namespace ? $namespace . '\\' . $className : $className;

@@ -146,17 +146,7 @@
 			return $this->sharkord->gateway->sendRpc("mutation", [
 				"input" => ["channelId" => $this->id],
 				"path"  => "messages.signalTyping",
-			])->then(function ($response) {
-
-				if (isset($response['type']) && $response['type'] === 'data') {
-					return true;
-				}
-
-				throw new \RuntimeException(
-					"Failed to send typing indicator. Server responded with: " . json_encode($response)
-				);
-
-			});
+			])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'send typing indicator'));
 
 		}
 
@@ -228,17 +218,7 @@
 			return $this->sharkord->gateway->sendRpc("mutation", [
 				"input" => ["channelId" => $this->id],
 				"path"  => "channels.markAsRead",
-			])->then(function ($response) {
-
-				if (isset($response['type']) && $response['type'] === 'data') {
-					return true;
-				}
-
-				throw new \RuntimeException(
-					"Failed to mark channel as read. Server responded with: " . json_encode($response)
-				);
-
-			});
+			])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'mark channel as read'));
 
 		}
 
@@ -311,17 +291,7 @@
 					"files"     => $fileIds,
 				],
 				"path" => "messages.send",
-			])->then(function ($response): bool {
-
-				if (isset($response['type']) && $response['type'] === 'data') {
-					return true;
-				}
-
-				throw new \RuntimeException(
-					"Failed to send message. Server responded with: " . json_encode($response)
-				);
-
-			});
+			])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'send message'));
 
 		}
 
@@ -410,17 +380,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => $input,
 					"path"  => "channels.update",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to edit channel. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'edit channel'));
 
 			});
 
@@ -450,17 +410,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["channelId" => $this->id],
 					"path"  => "channels.delete",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to delete channel. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'delete channel'));
 
 			});
 
@@ -560,18 +510,7 @@
 						"isCreate"  => true,
 					],
 					"path" => "channels.updatePermissions",
-				])->then(function (array $response) use ($roleId) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to add role {$roleId} to channel permissions. Server responded with: "
-							. json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, "add role {$roleId} to channel permissions"));
 
 			});
 
@@ -613,18 +552,7 @@
 						"permissions" => array_map(fn(ChannelPermissionFlag $f) => $f->value, $permissions),
 					],
 					"path" => "channels.updatePermissions",
-				])->then(function (array $response) use ($roleId) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to update permissions for role {$roleId}. Server responded with: "
-							. json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, "update permissions for role {$roleId}"));
 
 			});
 
@@ -658,18 +586,7 @@
 						"channelId" => $this->id,
 					],
 					"path" => "channels.deletePermissions",
-				])->then(function (array $response) use ($roleId) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to remove role {$roleId} from channel permissions. Server responded with: "
-							. json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, "remove role {$roleId} from channel permissions"));
 
 			});
 

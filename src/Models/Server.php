@@ -5,6 +5,7 @@
 	namespace Sharkord\Models;
 	
 	use Sharkord\Sharkord;
+	use React\Promise\PromiseInterface;
 
 	/**
 	 * Class Server
@@ -58,6 +59,81 @@
 			
 		}
 		
+		/**
+		 * Fetches the full administrative settings for this server.
+		 *
+		 * Convenience wrapper around {@see \Sharkord\Managers\ServerManager::getSettings()}.
+		 * Returns a {@see ServerSettings} model containing privileged fields such as
+		 * `secretToken` and `allowNewUsers` that are not included in the public settings.
+		 *
+		 * Requires the MANAGE_SETTINGS permission.
+		 *
+		 * @return PromiseInterface Resolves with a {@see ServerSettings} instance, rejects on failure.
+		 *
+		 * @example
+		 * ```php
+		 * $server->getSettings()->then(function(\Sharkord\Models\ServerSettings $settings) {
+		 *     echo "Server: {$settings->name}\n";
+		 *     echo "Allow signup: " . ($settings->allowNewUsers ? 'Yes' : 'No') . "\n";
+		 * });
+		 * ```
+		 */
+		public function getSettings(): PromiseInterface {
+
+			return $this->sharkord->servers->getSettings();
+
+		}
+
+		/**
+		 * Updates one or more server settings.
+		 *
+		 * Convenience wrapper that fetches the current {@see ServerSettings} and
+		 * delegates to {@see ServerSettings::update()}. The server will broadcast
+		 * an `onServerSettingsUpdate` event, which updates the cached Server model
+		 * automatically.
+		 *
+		 * Requires the MANAGE_SETTINGS permission.
+		 *
+		 * @param string|null $name                   New server display name.
+		 * @param string|null $description            New server description.
+		 * @param string|null $password               New server password. Pass an empty string to remove.
+		 * @param bool|null   $allowNewUsers          Whether to permit new user registrations.
+		 * @param bool|null   $directMessagesEnabled  Whether to enable direct messaging server-wide.
+		 * @param bool|null   $enablePlugins          Whether to enable server plugins.
+		 * @param bool|null   $enableSearch           Whether to enable server-wide search.
+		 * @return PromiseInterface Resolves with true on success, rejects on failure.
+		 *
+		 * @example
+		 * ```php
+		 * $server->edit(name: 'The Boyz', allowNewUsers: false)->then(function() {
+		 *     echo "Settings updated!\n";
+		 * });
+		 * ```
+		 */
+		public function edit(
+			?string $name = null,
+			?string $description = null,
+			?string $password = null,
+			?bool   $allowNewUsers = null,
+			?bool   $directMessagesEnabled = null,
+			?bool   $enablePlugins = null,
+			?bool   $enableSearch = null,
+		): PromiseInterface {
+
+			return $this->getSettings()->then(
+				fn(ServerSettings $settings) => $settings->update(
+					name: $name,
+					description: $description,
+					password: $password,
+					allowNewUsers: $allowNewUsers,
+					directMessagesEnabled: $directMessagesEnabled,
+					enablePlugins: $enablePlugins,
+					enableSearch: $enableSearch,
+				)
+			);
+
+		}
+
 		/**
 		 * Returns all the attributes as an array. Perfect for debugging!
 		 *

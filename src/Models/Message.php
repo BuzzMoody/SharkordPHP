@@ -7,6 +7,7 @@
 	use Sharkord\Sharkord;
 	use Sharkord\Permission;
 	use Sharkord\Internal\GuardedAsync;
+	use Sharkord\Internal\PromiseUtils;
 	use Sharkord\Collections\Reactions;
 	use Sharkord\Builders\MessageBuilder;
 
@@ -142,17 +143,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["messageId" => $this->id, "emoji" => $emojiText],
 					"path"  => "messages.toggleReaction"
-				])->then(function ($response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to react to message. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'react to message'));
 
 			});
 
@@ -185,17 +176,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["messageId" => $this->id, "content" => $newContent],
 					"path"  => "messages.edit"
-				])->then(function ($response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to edit message. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'edit message'));
 
 			});
 
@@ -227,17 +208,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["messageId" => $this->id],
 					"path"  => "messages.delete"
-				])->then(function ($response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to delete message. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'delete message'));
 
 			});
 
@@ -267,51 +238,59 @@
 
 				$this->sharkord->guard->requirePermission(Permission::MANAGE_MESSAGES);
 
-				return new Promise(function ($resolve, $reject) use ($timeout) {
+				return $this->sharkord->gateway->sendRpc("mutation", [
+					"input" => ["messageId" => $this->id],
+					"path"  => "messages.togglePin"
+				])->then(function (array $response) use ($timeout) {
 
-					$this->sharkord->gateway->sendRpc("mutation", [
-						"input" => ["messageId" => $this->id],
-						"path"  => "messages.togglePin"
-					])->then(function ($response) use ($resolve, $reject, $timeout) {
+					PromiseUtils::expectDataResponse($response, 'toggle pin');
 
-						if (!isset($response['type']) || $response['type'] !== 'data') {
-							$reject(new \RuntimeException(
-								"Failed to toggle pin. Server responded with: " . json_encode($response)
-							));
-							return;
-						}
-
-						$normalizedId = (string) $this->id;
-						$listener     = null;
-						$timer        = null;
-
-						$cleanup = function () use (&$listener, &$timer) {
-							$this->sharkord->removeListener('messageupdate', $listener);
-							if ($timer) {
-								$this->sharkord->loop->cancelTimer($timer);
-								$timer = null;
-							}
-						};
-
-						$listener = function (Message $updated) use ($resolve, $normalizedId, &$cleanup) {
-							if ((string) $updated->id === $normalizedId) {
-								$cleanup();
-								$resolve((bool) $updated->pinned);
-							}
-						};
-
-						$timer = $this->sharkord->loop->addTimer($timeout, function () use ($reject, $normalizedId, &$cleanup) {
-							$cleanup();
-							$reject(new \RuntimeException(
-								"togglePin timed out waiting for onUpdate confirmation for message ID {$normalizedId}."
-							));
-						});
-
-						$this->sharkord->on('messageupdate', $listener);
-
-					})->catch($reject);
+					return $this->awaitPinConfirmation($timeout);
 
 				});
+
+			});
+
+		}
+
+		/**
+		 * Waits for the server's messageupdate subscription event to confirm
+		 * the new pinned state after a togglePin mutation.
+		 *
+		 * @param int $timeout Seconds to wait before rejecting.
+		 * @return PromiseInterface Resolves with a bool indicating the new pinned state.
+		 */
+		private function awaitPinConfirmation(int $timeout): PromiseInterface {
+
+			return new Promise(function ($resolve, $reject) use ($timeout) {
+
+				$normalizedId = (string) $this->id;
+				$listener     = null;
+				$timer        = null;
+
+				$cleanup = function () use (&$listener, &$timer) {
+					$this->sharkord->removeListener('messageupdate', $listener);
+					if ($timer) {
+						$this->sharkord->loop->cancelTimer($timer);
+						$timer = null;
+					}
+				};
+
+				$listener = function (Message $updated) use ($resolve, $normalizedId, &$cleanup) {
+					if ((string) $updated->id === $normalizedId) {
+						$cleanup();
+						$resolve((bool) $updated->pinned);
+					}
+				};
+
+				$timer = $this->sharkord->loop->addTimer($timeout, function () use ($reject, $normalizedId, &$cleanup) {
+					$cleanup();
+					$reject(new \RuntimeException(
+						"togglePin timed out waiting for onUpdate confirmation for message ID {$normalizedId}."
+					));
+				});
+
+				$this->sharkord->on('messageupdate', $listener);
 
 			});
 
