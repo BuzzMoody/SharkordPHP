@@ -20,6 +20,13 @@
 		 * This name is used to invoke the command (e.g., "ping" for "!ping").
 		 *
 		 * @return string The command name.
+		 *
+		 * @example
+		 * ```php
+		 * public function getName(): string {
+		 *     return 'ping';
+		 * }
+		 * ```
 		 */
 		public function getName(): string;
 
@@ -27,6 +34,13 @@
 		 * Retrieves a brief description of what the command does.
 		 *
 		 * @return string The command description.
+		 *
+		 * @example
+		 * ```php
+		 * public function getDescription(): string {
+		 *     return 'Replies with Pong!';
+		 * }
+		 * ```
 		 */
 		public function getDescription(): string;
 		
@@ -34,6 +48,13 @@
 		 * A regex pattern match that will trigger the command
 		 *
 		 * @return string The command patttern.
+		 *
+		 * @example
+		 * ```php
+		 * public function getPattern(): string {
+		 *     return '/^ping$/i';
+		 * }
+		 * ```
 		 */
 		public function getPattern(): string;
 
@@ -45,6 +66,13 @@
 		 * @param string   $args    The arguments passed with the command.
 		 * @param array    $matches Regex capture groups from the command pattern.
 		 * @return void
+		 *
+		 * @example
+		 * ```php
+		 * public function handle(Sharkord $sharkord, Message $message, string $args, array $matches): void {
+		 *     $message->reply('Pong!');
+		 * }
+		 * ```
 		 */
 		public function handle(Sharkord $sharkord, Message $message, string $args, array $matches): void;
 

@@ -4,6 +4,29 @@
 
 	namespace Sharkord;
 
+	/**
+	 * Enum Permission
+	 *
+	 * Represents the server-wide permissions that can be assigned to roles.
+	 *
+	 * @package Sharkord
+	 *
+	 * @example
+	 * ```php
+	 * // Check if the bot has a specific permission
+	 * if ($sharkord->bot->hasPermission(\Sharkord\Permission::MANAGE_MESSAGES)) {
+	 *     echo "Bot can manage messages.\n";
+	 * }
+	 *
+	 * // Grant permissions when editing a role
+	 * $sharkord->roles->get(3)?->edit(
+	 *     'Moderators',
+	 *     '#00aaff',
+	 *     \Sharkord\Permission::MANAGE_MESSAGES,
+	 *     \Sharkord\Permission::MANAGE_USERS,
+	 * );
+	 * ```
+	 */
 	enum Permission: string {
 		
 		case SEND_MESSAGES = 'SEND_MESSAGES';

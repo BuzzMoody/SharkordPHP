@@ -26,6 +26,12 @@
 		 * @param string $logLevel The minimum log level name (e.g. 'Notice', 'Debug').
 		 * @return LoggerInterface
 		 * @throws \InvalidArgumentException If the log level name is invalid.
+		 *
+		 * @example
+		 * ```php
+		 * $logger = \Sharkord\Internal\LoggerFactory::create('Debug');
+		 * $logger->info("Logger initialised.");
+		 * ```
 		 */
 		public static function create(string $logLevel): LoggerInterface {
 
