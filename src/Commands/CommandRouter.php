@@ -24,7 +24,7 @@
 		/**
 		 * CommandRouter constructor.
 		 *
-		 * @param LoggerInterface $logger The PSR-3 logger instance.
+		 * @param Sharkord $sharkord The main bot instance.
 		 */
 		public function __construct(
 			private Sharkord $sharkord
@@ -35,6 +35,11 @@
 		 *
 		 * @param CommandInterface $command The command object to register.
 		 * @return void
+		 *
+		 * @example
+		 * ```php
+		 * $sharkord->commands->register(new PingCommand());
+		 * ```
 		 */
 		public function register(CommandInterface $command): void {
 			
@@ -49,6 +54,11 @@
 		 * @param string $directory The absolute path to the directory containing command classes.
 		 * @param string $namespace (Optional) The namespace used in the command files. Default is empty (global).
 		 * @return void
+		 *
+		 * @example
+		 * ```php
+		 * $sharkord->commands->loadFromDirectory(__DIR__ . '/Commands', 'App\\Commands');
+		 * ```
 		 */
 		public function loadFromDirectory(string $directory, string $namespace = ''): void {
 			
@@ -94,6 +104,14 @@
 		 * @param Message	$message	The received message object.
 		 * @param array		$matches	The original regex matches
 		 * @return void
+		 *
+		 * @example
+		 * ```php
+		 * // Typically called automatically by the framework:
+		 * if (preg_match('/^!(\w+)\s*(.*)/s', $message->content, $matches)) {
+		 *     $sharkord->commands->handle($message, $matches);
+		 * }
+		 * ```
 		 */
 		public function handle(Message $message, array $matches): void {
 
@@ -121,6 +139,13 @@
 		 * Retrieves all registered commands. Useful for generating "Help" menus.
 		 *
 		 * @return array<string, CommandInterface>
+		 *
+		 * @example
+		 * ```php
+		 * foreach ($sharkord->commands->getCommands() as $name => $command) {
+		 *     echo "!{$name} — {$command->getDescription()}\n";
+		 * }
+		 * ```
 		 */
 		public function getCommands(): array {
 			return $this->commands;

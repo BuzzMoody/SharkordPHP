@@ -174,6 +174,12 @@
 		 * matching the wire format expected by the `messages.send` RPC.
 		 *
 		 * @return string The fully constructed HTML string ready for dispatch.
+		 *
+		 * @example
+		 * ```php
+		 * $builder = \Sharkord\Builders\MessageBuilder::create()->setContent('Hello!');
+		 * echo $builder->buildHtml(); // "<p>Hello!</p>"
+		 * ```
 		 */
 		public function buildHtml(): string {
 
@@ -194,6 +200,12 @@
 		 * Returns the message body text.
 		 *
 		 * @return string
+		 *
+		 * @example
+		 * ```php
+		 * $builder = \Sharkord\Builders\MessageBuilder::create()->setContent('Hello!');
+		 * echo $builder->getContent(); // "Hello!"
+		 * ```
 		 */
 		public function getContent(): string {
 
@@ -205,6 +217,15 @@
 		 * Returns the list of queued files.
 		 *
 		 * @return array<int, array{path: string, mime: string|null}>
+		 *
+		 * @example
+		 * ```php
+		 * $builder = \Sharkord\Builders\MessageBuilder::create()
+		 *     ->addFile('/tmp/a.png')
+		 *     ->addFile('/tmp/b.pdf', 'application/pdf');
+		 *
+		 * var_dump($builder->getPendingFiles());
+		 * ```
 		 */
 		public function getPendingFiles(): array {
 

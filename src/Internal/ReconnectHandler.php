@@ -42,6 +42,12 @@
 		 * Resets the attempt counter after a successful connection.
 		 *
 		 * @return void
+		 *
+		 * @example
+		 * ```php
+		 * // Called automatically after a successful connection.
+		 * $reconnectHandler->reset();
+		 * ```
 		 */
 		public function reset(): void {
 
@@ -56,6 +62,12 @@
 		 * Backs off at 2^attempt seconds (2s, 4s, 8s...) capped at 60 seconds.
 		 *
 		 * @return void
+		 *
+		 * @example
+		 * ```php
+		 * // Called automatically when the gateway connection is lost.
+		 * $reconnectHandler->attempt();
+		 * ```
 		 */
 		public function attempt(): void {
 

@@ -35,6 +35,10 @@
 		
 		/**
 		 * Factory method to create a Server from raw API data.
+		 *
+		 * @param array    $raw      The raw server data from the server.
+		 * @param Sharkord $sharkord Reference to the main bot instance.
+		 * @return self
 		 */
 		public static function fromArray(array $raw, Sharkord $sharkord): self {
 			return new self($sharkord, $raw);
@@ -58,6 +62,11 @@
 		 * Returns all the attributes as an array. Perfect for debugging!
 		 *
 		 * @return array
+		 *
+		 * @example
+		 * ```php
+		 * var_dump($sharkord->servers->getFirst()?->toArray());
+		 * ```
 		 */
 		public function toArray(): array {
 			

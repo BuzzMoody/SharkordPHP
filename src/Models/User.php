@@ -42,6 +42,10 @@
 		
 		/**
 		 * Factory method to create a User from raw API data.
+		 *
+		 * @param array    $raw      The raw user data from the server.
+		 * @param Sharkord $sharkord Reference to the main bot instance.
+		 * @return self
 		 */
 		public static function fromArray(array $raw, Sharkord $sharkord): self {
 			return new self($sharkord, $raw);
@@ -84,6 +88,13 @@
 		 *
 		 * @param Permission $permission The permission enum case to check.
 		 * @return bool True if any of the user's roles have the permission, false otherwise.
+		 *
+		 * @example
+		 * ```php
+		 * if ($user->hasPermission(\Sharkord\Permission::MANAGE_CHANNELS)) {
+		 *     echo "{$user->name} can manage channels.\n";
+		 * }
+		 * ```
 		 */
 		public function hasPermission(Permission $permission): bool {
 			
@@ -96,6 +107,13 @@
 		 * Checks if the user is a server owner.
 		 *
 		 * @return bool True if the user is an owner, false otherwise.
+		 *
+		 * @example
+		 * ```php
+		 * if ($user->isOwner()) {
+		 *     echo "{$user->name} is a server owner.\n";
+		 * }
+		 * ```
 		 */
 		public function isOwner(): bool {
 			
@@ -108,6 +126,13 @@
 		 *
 		 * @param int $roleId The role id to check.
 		 * @return bool True if the user has the role, false otherwise.
+		 *
+		 * @example
+		 * ```php
+		 * if ($user->hasRole(3)) {
+		 *     echo "{$user->name} has the Moderator role.\n";
+		 * }
+		 * ```
 		 */
 		public function hasRole(int $roleId): bool {
 			// Get all the Role objects for this user using the magic getter
@@ -128,6 +153,15 @@
 		 *
 		 * @param string $reason The reason for the ban.
 		 * @return PromiseInterface Resolves on success, rejects on failure.
+		 *
+		 * @throws \RuntimeException If the bot lacks MANAGE_USERS or the target is the server owner.
+		 *
+		 * @example
+		 * ```php
+		 * $user->ban('Spamming in #general')->then(function() use ($user) {
+		 *     echo "{$user->name} has been banned.\n";
+		 * });
+		 * ```
 		 */
 		public function ban(string $reason = 'No reason given.'): PromiseInterface {
 
@@ -149,6 +183,15 @@
 		 * Unbans a user from the server.
 		 *
 		 * @return PromiseInterface Resolves on success, rejects on failure.
+		 *
+		 * @throws \RuntimeException If the bot lacks MANAGE_USERS.
+		 *
+		 * @example
+		 * ```php
+		 * $user->unban()->then(function() use ($user) {
+		 *     echo "{$user->name} has been unbanned.\n";
+		 * });
+		 * ```
 		 */
 		public function unban(): PromiseInterface {
 
@@ -170,6 +213,15 @@
 		 *
 		 * @param string $reason The reason for the kick.
 		 * @return PromiseInterface Resolves on success, rejects on failure.
+		 *
+		 * @throws \RuntimeException If the bot lacks MANAGE_USERS or the target is the server owner.
+		 *
+		 * @example
+		 * ```php
+		 * $user->kick('Violating server rules')->then(function() use ($user) {
+		 *     echo "{$user->name} has been kicked.\n";
+		 * });
+		 * ```
 		 */
 		public function kick(string $reason = 'No reason given.'): PromiseInterface {
 
@@ -192,6 +244,15 @@
 		 *
 		 * @param bool  $wipe Whether to delete all associated user data (posts, files, emoji, etc.).
 		 * @return PromiseInterface Resolves on success, rejects on failure.
+		 *
+		 * @throws \RuntimeException If the bot lacks MANAGE_USERS or the target is the server owner.
+		 *
+		 * @example
+		 * ```php
+		 * $user->delete(wipe: true)->then(function() use ($user) {
+		 *     echo "{$user->name} and all their data have been removed.\n";
+		 * });
+		 * ```
 		 */
 		public function delete(bool $wipe = false): PromiseInterface {
 
@@ -263,6 +324,11 @@
 		 * Returns all the attributes as an array. Perfect for debugging!
 		 *
 		 * @return array
+		 *
+		 * @example
+		 * ```php
+		 * var_dump($user->toArray());
+		 * ```
 		 */
 		public function toArray(): array {
 			

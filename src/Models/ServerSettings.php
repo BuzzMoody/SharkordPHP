@@ -138,7 +138,7 @@
 		 *         name: 'The Boyz',
 		 *         allowNewUsers: false,
 		 *         directMessagesEnabled: true,
-		 *         nableSearch: true,
+		 *         enableSearch: true,
 		 *     );
 		 * })->then(function () {
 		 *     echo "Settings updated!\n";

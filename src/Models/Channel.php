@@ -133,6 +133,13 @@
 		 * For longer operations, use sendTypingWhile() instead.
 		 *
 		 * @return PromiseInterface Resolves with true on success, rejects on failure.
+		 *
+		 * @example
+		 * ```php
+		 * $channel->sendTyping()->then(function() {
+		 *     echo "Typing indicator sent.\n";
+		 * });
+		 * ```
 		 */
 		public function sendTyping(): PromiseInterface {
 
@@ -162,6 +169,16 @@
 		 *
 		 * @param PromiseInterface $promise The operation to show a typing indicator for.
 		 * @return PromiseInterface Resolves or rejects with the same value as the given Promise.
+		 *
+		 * @example
+		 * ```php
+		 * // Show typing while fetching data from an external API
+		 * $channel->sendTypingWhile(
+		 *     $httpClient->get('https://api.example.com/data')
+		 * )->then(function($response) use ($channel) {
+		 *     $channel->sendMessage("Got the data: {$response}");
+		 * });
+		 * ```
 		 */
 		public function sendTypingWhile(PromiseInterface $promise): PromiseInterface {
 
@@ -666,6 +683,11 @@
 		 * Returns all the attributes as a plain array. Useful for debugging.
 		 *
 		 * @return array
+		 *
+		 * @example
+		 * ```php
+		 * var_dump($channel->toArray());
+		 * ```
 		 */
 		public function toArray(): array {
 

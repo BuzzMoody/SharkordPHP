@@ -47,6 +47,10 @@
 		
 		/**
 		 * Factory method to create a Message from raw API data.
+		 *
+		 * @param array    $raw      The raw message data from the server.
+		 * @param Sharkord $sharkord Reference to the main bot instance.
+		 * @return self
 		 */
 		public static function fromArray(array $raw, Sharkord $sharkord): self {
 			return new self($sharkord, $raw);
@@ -112,6 +116,16 @@
 		 *
 		 * @param string  $emoji   The emoji character(s) to use for the reaction.
 		 * @return PromiseInterface Resolves on success, rejects on failure.
+		 *
+		 * @throws \RuntimeException If the bot lacks REACT_TO_MESSAGES.
+		 * @throws \InvalidArgumentException If the emoji is invalid.
+		 *
+		 * @example
+		 * ```php
+		 * $message->react('👍')->then(function() {
+		 *     echo "Reacted!\n";
+		 * });
+		 * ```
 		 */
 		public function react(string $emoji): PromiseInterface {
 
@@ -149,6 +163,15 @@
 		 *
 		 * @param string $newContent The new message text.
 		 * @return PromiseInterface Resolves with true when the message is edited.
+		 *
+		 * @throws \RuntimeException If the bot lacks ownership or MANAGE_MESSAGES.
+		 *
+		 * @example
+		 * ```php
+		 * $message->edit('Updated content.')->then(function() {
+		 *     echo "Message edited.\n";
+		 * });
+		 * ```
 		 */
 		public function edit(string $newContent): PromiseInterface {
 
@@ -182,6 +205,15 @@
 		 * Deletes this message.
 		 *
 		 * @return PromiseInterface Resolves with true when the message is deleted.
+		 *
+		 * @throws \RuntimeException If the bot lacks ownership or MANAGE_MESSAGES.
+		 *
+		 * @example
+		 * ```php
+		 * $message->delete()->then(function() {
+		 *     echo "Message deleted.\n";
+		 * });
+		 * ```
 		 */
 		public function delete(): PromiseInterface {
 
@@ -219,6 +251,15 @@
 		 *
 		 * @param int $timeout Seconds to wait for the onUpdate confirmation before rejecting.
 		 * @return PromiseInterface Resolves with a bool indicating the new pinned state (true = pinned, false = unpinned).
+		 *
+		 * @throws \RuntimeException If the bot lacks MANAGE_MESSAGES or the confirmation times out.
+		 *
+		 * @example
+		 * ```php
+		 * $message->togglePin()->then(function(bool $pinned) {
+		 *     echo $pinned ? "Message pinned.\n" : "Message unpinned.\n";
+		 * });
+		 * ```
 		 */
 		public function togglePin(int $timeout = 10): PromiseInterface {
 
@@ -280,6 +321,13 @@
 		 * Checks whether this message is currently pinned.
 		 *
 		 * @return bool True if the message is pinned, false otherwise.
+		 *
+		 * @example
+		 * ```php
+		 * if ($message->isPinned()) {
+		 *     echo "This message is pinned.\n";
+		 * }
+		 * ```
 		 */
 		public function isPinned(): bool {
 			return (bool)($this->attributes['pinned'] ?? false);
@@ -333,6 +381,13 @@
 		 * Determines whether this message contains any user mentions.
 		 *
 		 * @return bool True if the message mentions one or more users, false otherwise.
+		 *
+		 * @example
+		 * ```php
+		 * if ($message->hasMentions()) {
+		 *     echo "Someone was mentioned!\n";
+		 * }
+		 * ```
 		 */
 		public function hasMentions(): bool {
 			
