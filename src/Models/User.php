@@ -135,17 +135,9 @@
 		 * ```
 		 */
 		public function hasRole(int $roleId): bool {
-			// Get all the Role objects for this user using the magic getter
-			$roles = $this->roleIds;
 
-			if ($roles && in_array($roleId, $roles, false)) {
-				
-				return true;
-				
-			}
+			return !empty($this->roleIds) && in_array($roleId, $this->roleIds, false);
 
-			// If we checked all roles and didn't find the permission, return false
-			return false;
 		}
 		
 		/**

@@ -7,6 +7,7 @@
 	use Sharkord\Sharkord;
 	use Sharkord\Permission;
 	use Sharkord\Internal\GuardedAsync;
+	use Sharkord\Internal\PromiseUtils;
 	use React\Promise\PromiseInterface;
 
 	/**
@@ -157,17 +158,7 @@
 						"name"       => $name,
 					],
 					"path" => "categories.update",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to edit category. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'edit category'));
 
 			});
 
@@ -197,17 +188,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["categoryId" => $this->id],
 					"path"  => "categories.delete",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to delete category. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'delete category'));
 
 			});
 

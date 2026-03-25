@@ -7,6 +7,7 @@
 	use Sharkord\Sharkord;
 	use Sharkord\Permission;
 	use Sharkord\Internal\GuardedAsync;
+	use Sharkord\Internal\PromiseUtils;
 	use React\Promise\PromiseInterface;
 
 	/**
@@ -114,17 +115,7 @@
 						"permissions" => array_map(fn(Permission $p) => $p->value, $permissions),
 					],
 					"path" => "roles.update",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to edit role. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'edit role'));
 
 			});
 
@@ -157,17 +148,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["roleId" => $this->id],
 					"path"  => "roles.setDefault",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to set role as default. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'set role as default'));
 
 			});
 
@@ -198,17 +179,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["roleId" => $this->id],
 					"path"  => "roles.delete",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to delete role. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'delete role'));
 
 			});
 

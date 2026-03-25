@@ -5,6 +5,7 @@
 	namespace Sharkord\Models;
 
 	use Sharkord\Sharkord;
+	use Sharkord\Internal\PromiseUtils;
 	use React\Promise\PromiseInterface;
 
 	/**
@@ -89,22 +90,12 @@
 
 			return $this->sharkord->gateway->sendRpc("mutation", [
 				"input" => [
-					"content"   => "<p>" . htmlspecialchars($text) . "</p>",
+					"content"   => "<p>" . htmlspecialchars($text, ENT_QUOTES, 'UTF-8') . "</p>",
 					"channelId" => $this->channelId,
 					"files"     => [],
 				],
 				"path" => "messages.send",
-			])->then(function ($response) {
-
-				if (isset($response['type']) && $response['type'] === 'data') {
-					return true;
-				}
-
-				throw new \RuntimeException(
-					"Failed to send DM. Server responded with: " . json_encode($response)
-				);
-
-			});
+			])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'send DM'));
 
 		}
 
@@ -135,17 +126,7 @@
 			return $this->sharkord->gateway->sendRpc("mutation", [
 				"input" => ["channelId" => $this->channelId],
 				"path"  => "channels.markAsRead",
-			])->then(function ($response) {
-
-				if (isset($response['type']) && $response['type'] === 'data') {
-					return true;
-				}
-
-				throw new \RuntimeException(
-					"Failed to mark DM as read. Server responded with: " . json_encode($response)
-				);
-
-			});
+			])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'mark DM as read'));
 
 		}
 

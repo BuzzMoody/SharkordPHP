@@ -7,6 +7,7 @@
 	use Sharkord\Sharkord;
 	use Sharkord\Permission;
 	use Sharkord\Internal\GuardedAsync;
+	use Sharkord\Internal\PromiseUtils;
 	use Sharkord\Collections\Categories as CategoriesCollection;
 	use Sharkord\Models\Category;
 	use React\Promise\PromiseInterface;
@@ -310,17 +311,7 @@
 				return $this->sharkord->gateway->sendRpc("mutation", [
 					"input" => ["categoryIds" => array_values($categoryIds)],
 					"path"  => "categories.reorder",
-				])->then(function (array $response) {
-
-					if (isset($response['type']) && $response['type'] === 'data') {
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to reorder categories. Server responded with: " . json_encode($response)
-					);
-
-				});
+				])->then(fn(array $r) => PromiseUtils::expectDataResponse($r, 'reorder categories'));
 
 			});
 

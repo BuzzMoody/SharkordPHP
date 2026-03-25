@@ -9,6 +9,7 @@
 	use Sharkord\Sharkord;
 	use Sharkord\Permission;
 	use Sharkord\Internal\GuardedAsync;
+	use Sharkord\Internal\PromiseUtils;
 
 	/**
 	 * Class ServerSettings
@@ -182,14 +183,9 @@
 					"path"  => "others.updateSettings",
 				])->then(function (array $response) use ($input): bool {
 
-					if (isset($response['type']) && $response['type'] === 'data') {
-						$this->updateFromArray($response['data'] ?? $input);
-						return true;
-					}
-
-					throw new \RuntimeException(
-						"Failed to update server settings. Server responded with: " . json_encode($response)
-					);
+					PromiseUtils::expectDataResponse($response, 'update server settings');
+					$this->updateFromArray($response['data'] ?? $input);
+					return true;
 
 				});
 
