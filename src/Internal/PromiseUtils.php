@@ -22,6 +22,15 @@
 		 *
 		 * @param mixed $reason The rejection reason.
 		 * @return string A human-readable representation of the rejection reason.
+		 *
+		 * @example
+		 * ```php
+		 * $promise->catch(function(mixed $reason) use ($sharkord) {
+		 *     $sharkord->logger->error(
+		 *         \Sharkord\Internal\PromiseUtils::reasonToString($reason)
+		 *     );
+		 * });
+		 * ```
 		 */
 		public static function reasonToString(mixed $reason): string {
 

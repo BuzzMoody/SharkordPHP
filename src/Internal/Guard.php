@@ -33,6 +33,11 @@
 		 *
 		 * @return void
 		 * @throws \RuntimeException If the bot entity is not set.
+		 *
+		 * @example
+		 * ```php
+		 * $sharkord->guard->requireBot();
+		 * ```
 		 */
 		public function requireBot(): void {
 
@@ -48,6 +53,11 @@
 		 * @param Permission $permission The permission to require.
 		 * @return void
 		 * @throws \RuntimeException If the bot entity is not set or lacks the permission.
+		 *
+		 * @example
+		 * ```php
+		 * $sharkord->guard->requirePermission(\Sharkord\Permission::MANAGE_CHANNELS);
+		 * ```
 		 */
 		public function requirePermission(Permission $permission): void {
 
@@ -71,6 +81,14 @@
 		 * @param Permission      $permission      The fallback permission to require if not the owner.
 		 * @return void
 		 * @throws \RuntimeException If the bot entity is not set, is not the owner, and lacks the permission.
+		 *
+		 * @example
+		 * ```php
+		 * $sharkord->guard->requireOwnershipOrPermission(
+		 *     $message->author?->id,
+		 *     \Sharkord\Permission::MANAGE_MESSAGES,
+		 * );
+		 * ```
 		 */
 		public function requireOwnershipOrPermission(int|string|null $resourceOwnerId, Permission $permission): void {
 
@@ -95,6 +113,11 @@
 		 * @param User $user The user to check.
 		 * @return void
 		 * @throws \RuntimeException If the user is the server owner.
+		 *
+		 * @example
+		 * ```php
+		 * $sharkord->guard->requireNotOwner($user);
+		 * ```
 		 */
 		public function requireNotOwner(User $user): void {
 
